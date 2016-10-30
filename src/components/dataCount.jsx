@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react'
 import dc from 'dc'
+import { ChartPropertyHelper } from '../helpers'
 
 export default class DataCount extends Component {
   static propTypes = {
@@ -13,11 +14,8 @@ export default class DataCount extends Component {
 
   loadChart = (container) => {
     const chart = dc.dataCount(container);
-    for (let [key, value] of Object.entries(this.props)) {
-      if (value) {
-        chart[key](value(this.context.crossfilterContext));
-      }
-    }
+    const helper = new ChartPropertyHelper(this, chart);
+    helper.setContextProperties('dimension', 'group');
     chart.render();
   };
 
