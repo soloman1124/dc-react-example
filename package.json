@@ -1,0 +1,15 @@
+{
+  "jspm": {
+    "dependencies": {
+      "dc": "npm:dc@^2.0.0-beta.32",
+      "jsx": "npm:jspm-loader-jsx@^0.0.7",
+      "react": "npm:react@^15.3.2",
+      "react-dom": "npm:react-dom@^15.3.2"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
