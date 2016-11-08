@@ -1,21 +1,13 @@
 import React, { PropTypes, Component } from 'react'
 import dc from 'dc'
-import { ChartPropertyHelper } from '../helpers'
+import { Base } from './Base.jsx!'
 
-export default class DataCount extends Component {
-  static propTypes = {
-    dimension: PropTypes.func,
-    group: PropTypes.func
-  };
-
-  static contextTypes = {
-    crossfilterContext: PropTypes.object.isRequired
-  };
+class DataCount extends Component {
 
   loadChart = (container) => {
     const chart = dc.dataCount(container);
-    const helper = new ChartPropertyHelper(this, chart);
-    helper.setContextProperties('dimension', 'group');
+    this.props.chartHelper(this, chart);
+
     chart.render();
   };
 
@@ -27,3 +19,5 @@ export default class DataCount extends Component {
     );
   }
 }
+
+export default Base(DataCount);

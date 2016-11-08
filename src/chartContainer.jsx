@@ -29,7 +29,7 @@ export default class ChartContainer extends Component {
     }
 
     return (
-      <div>
+      <div className={this.props.className}>
         {this.props.children}
       </div>
     );

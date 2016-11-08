@@ -1,16 +1,20 @@
-import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
-import ChartContainer from './chartContainer.jsx!'
-import DataCount from './components/dataCount.jsx!'
-import DataTable from './components/dataTable.jsx!'
-import BubbleChart from './components/BubbleChart.jsx!'
-import crossfilter from 'crossfilter'
-import d3 from 'd3';
+import 'dc/dc.css!';
+import 'bootstrap/css/bootstrap.css!';
 
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import ChartContainer from './chartContainer.jsx!';
+import DataCount from './components/DataCount.jsx!';
+import DataTable from './components/DataTable.jsx!';
+import BubbleChart from './components/BubbleChart.jsx!';
+import RowChart from './components/RowChart.jsx!';
+import PieChart from './components/PieChart.jsx!';
+import crossfilter from 'crossfilter';
+import d3 from 'd3';
 
 const dateFormat = d3.time.format('%m/%d/%Y');
 const numberFormat = d3.format('.2f');
-
+const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 class CrossfilterContext {
   constructor(data) {
@@ -19,6 +23,19 @@ class CrossfilterContext {
     this.groupAll = this.crossfilter.groupAll();
     this.dateDimension = this.crossfilter.dimension(d => d.dd);
     this.yearlyDimension = this.crossfilter.dimension(d => d3.time.year(d.dd).getFullYear());
+    this.dayOfWeekDimension = this.crossfilter.dimension((d) => {
+      var day = d.dd.getDay();
+      return `${day}.${weekdayLabels[day]}`;
+    });
+    this.dayOfWeekGroup = this.dayOfWeekDimension.group();
+    this.gainOrLossDimension = this.crossfilter.dimension(d => d.open > d.close ? 'Loss' : 'Gain' );
+    this.gainOrLossGroup = this.gainOrLossDimension.group();
+
+    this.quarterDimension = this.crossfilter.dimension((d) => {
+      let quarter = Math.floor(d.dd.getMonth() / 3) + 1;
+      return `Q${quarter}`;
+    });
+    this.quarterGroup = this.quarterDimension.group().reduceSum(d => d.volume);
   }
 
   get yearlyPerformanceGroup() {
@@ -65,7 +82,15 @@ class CrossfilterContext {
 }
 
 class App extends Component {
-  crossfilterContext(callback) {
+  constructor(props) {
+    super(props);
+    this._crossfilterContext = null;
+  }
+
+  crossfilterContext = (callback) => {
+    if (!callback) {
+      return this._crossfilterContext;
+    }
     d3.csv('../ndx.csv', (data) => {
       for (let d of data) {
         d.dd = dateFormat.parse(d.date);
@@ -73,14 +98,15 @@ class App extends Component {
         d.close = +d.close;
         d.open = +d.open;
       }
-      callback(new CrossfilterContext(data));
+      this._crossfilterContext = new CrossfilterContext(data);
+      callback(this._crossfilterContext);
     });
-  }
+  };
 
   render() {
     return (
-      <ChartContainer crossfilterContext={this.crossfilterContext}>
-        <BubbleChart
+      <ChartContainer className="container" crossfilterContext={this.crossfilterContext}>
+        <BubbleChart className="row"
           dimension={ctx => ctx.yearlyDimension}
           group={ctx => ctx.yearlyPerformanceGroup}
           width={990} height={250}
@@ -93,6 +119,32 @@ class App extends Component {
           r={d3.scale.linear().domain([0, 4000])}
           colorDomain={[-500, 500]}
         />
+        <div className="row">
+          <PieChart
+            dimension={ctx => ctx.gainOrLossDimension}
+            group={ctx => ctx.gainOrLossGroup}
+            width={280} height={180}
+            radius={80}
+            label={(d) => {
+              let percent = numberFormat(d.value / this.crossfilterContext().groupAll.value() * 100);
+
+              return `${d.key} (${percent}%)`;
+            }}
+          />
+          <PieChart
+            dimension={ctx => ctx.quarterDimension}
+            group={ctx => ctx.quarterGroup}
+            width={280} height={180}
+            radius={80} innerRadius={30}
+          />
+          <RowChart
+            dimension={ctx => ctx.dayOfWeekDimension}
+            group={ctx => ctx.dayOfWeekGroup}
+            width={280} height={180}
+            elasticX={true}
+            label={d => d.key.split('.')[1]}
+          />
+        </div>
         <DataCount
           dimension={ctx => ctx.crossfilter}
           group={ctx => ctx.groupAll}
@@ -104,6 +156,7 @@ class App extends Component {
             'date', 'open', 'close', 'volume'
           ]}
         />
+        <div className="clearfix" />
       </ChartContainer>
     );
   }

@@ -1,13 +1,9 @@
 import React, { Component, PropTypes } from 'react'
 import dc from 'dc'
-import { ChartPropertyHelper } from '../helpers'
+import { Base } from './Base.jsx!'
 
-export default class BubbleChart extends Component {
+class BubbleChart extends Component {
   static propTypes = {
-    dimension: PropTypes.func,
-    group: PropTypes.func,
-    width: PropTypes.number,
-    height: PropTypes.number,
     colorAccessor: PropTypes.func,
     keyAccessor: PropTypes.func,
     valueAccessor: PropTypes.func,
@@ -17,25 +13,21 @@ export default class BubbleChart extends Component {
     r: PropTypes.func,
     colorDomain: PropTypes.array
   };
-  static contextTypes = {
-    crossfilterContext: PropTypes.object.isRequired
-  };
 
   loadChart = (container) => {
     const chart = dc.bubbleChart(container);
-    const helper = new ChartPropertyHelper(this, chart);
-    helper
-      .setProperties('width', 'height', 'colorAccessor', 'keyAccessor',
-                     'valueAccessor', 'radiusValueAccessor', 'x', 'y', 'r',
-                     'colorDomain')
-      .setContextProperties('dimension', 'group');
-
+    const helper = this.props.chartHelper(this, chart);
+    helper.setProperties('colorAccessor', 'keyAccessor',
+                         'valueAccessor', 'radiusValueAccessor', 'x', 'y', 'r',
+                         'colorDomain');
     chart.render();
   };
 
   render() {
     return (
-      <div ref={this.loadChart} />
+      <div className={this.props.className} ref={this.loadChart} />
     );
   }
 }
+
+export default Base(BubbleChart);

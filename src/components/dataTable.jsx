@@ -1,24 +1,18 @@
 import React, { Component, PropTypes } from 'react'
 import dc from 'dc'
-import { ChartPropertyHelper } from '../helpers'
+import { Base } from './Base.jsx!'
 
-export default class DataTable extends Component {
+class DataTable extends Component {
   static propTypes = {
-    dimension: PropTypes.func,
-    group: PropTypes.func,
     columns: PropTypes.array.isRequired,
-  };
-
-  static contextTypes = {
-    crossfilterContext: PropTypes.object.isRequired
   };
 
   loadChart = (container) => {
     const chart = dc.dataTable(container);
-    const helper = new ChartPropertyHelper(this, chart);
-    helper
-      .setProperties('columns', 'group')
-      .setContextProperty('dimension');
+    const helper = this.props.chartHelper(this, chart, false);
+    helper.setContextProperties('dimension')
+          .setProperties('columns', 'group');
+
     chart.render();
   };
 
@@ -28,3 +22,5 @@ export default class DataTable extends Component {
     );
   }
 }
+
+export default Base(DataTable);

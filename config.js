@@ -14,11 +14,19 @@ System.config({
     "npm:*": "jspm_packages/npm/*"
   },
 
+  meta: {
+    "*.css": {
+      "loader": "css"
+    }
+  },
+
   map: {
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
+    "bootstrap": "github:twbs/bootstrap@3.3.7",
     "core-js": "npm:core-js@1.2.7",
     "crossfilter": "npm:crossfilter2@1.3.14",
+    "css": "github:systemjs/plugin-css@0.1.32",
     "d3": "npm:d3@3.5.17",
     "dc": "npm:dc@2.0.0-beta.32",
     "jsx": "npm:jspm-loader-jsx@0.0.7",
@@ -79,6 +87,9 @@ System.config({
     },
     "github:jspm/nodelibs-zlib@0.1.0": {
       "browserify-zlib": "npm:browserify-zlib@0.1.4"
+    },
+    "github:twbs/bootstrap@3.3.7": {
+      "jquery": "npm:jquery@3.1.1"
     },
     "npm:acorn@3.3.0": {
       "process": "github:jspm/nodelibs-process@0.1.2"

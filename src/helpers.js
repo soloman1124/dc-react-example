@@ -33,7 +33,7 @@ class ChartPropertyHelper {
     if (this.props.hasOwnProperty(key)) {
       let func = this.props[key];
       if (func) {
-        this.chart[key](func(this.component.context.crossfilterContext));
+        this.chart[key](func(this.props.crossfilterContext));
       }
     }
     return this;
