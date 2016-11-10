@@ -3,12 +3,7 @@ import 'bootstrap/css/bootstrap.css!';
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import ChartContainer from './chartContainer.jsx!';
-import DataCount from './components/DataCount.jsx!';
-import DataTable from './components/DataTable.jsx!';
-import BubbleChart from './components/BubbleChart.jsx!';
-import RowChart from './components/RowChart.jsx!';
-import PieChart from './components/PieChart.jsx!';
+import { ChartContainer, PieChart, RowChart, BubbleChart, DataTable, DataCount } from 'dc-react';
 import crossfilter from 'crossfilter';
 import d3 from 'd3';
 

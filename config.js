@@ -29,6 +29,7 @@ System.config({
     "css": "github:systemjs/plugin-css@0.1.32",
     "d3": "npm:d3@3.5.17",
     "dc": "npm:dc@2.0.0-beta.32",
+    "dc-react": "github:soloman1124/dc-react@master",
     "jsx": "npm:jspm-loader-jsx@0.0.7",
     "react": "npm:react@15.3.2",
     "react-dom": "npm:react-dom@15.3.2",
