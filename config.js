@@ -29,7 +29,7 @@ System.config({
     "css": "github:systemjs/plugin-css@0.1.32",
     "d3": "npm:d3@3.5.17",
     "dc": "npm:dc@2.0.0-beta.32",
-    "dc-react": "github:soloman1124/dc-react@master",
+    "dc-react": "npm:dc-react@0.0.3",
     "jsx": "npm:jspm-loader-jsx@0.0.7",
     "react": "npm:react@15.3.2",
     "react-dom": "npm:react-dom@15.3.2",
@@ -177,7 +177,7 @@ System.config({
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "pako": "npm:pako@0.2.9",
       "process": "github:jspm/nodelibs-process@0.1.2",
-      "readable-stream": "npm:readable-stream@2.1.5",
+      "readable-stream": "npm:readable-stream@2.2.1",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
     "npm:buffer-shims@1.0.0": {
@@ -282,6 +282,11 @@ System.config({
       "public-encrypt": "npm:public-encrypt@4.0.0",
       "randombytes": "npm:randombytes@2.0.3"
     },
+    "npm:dc-react@0.0.3": {
+      "dc": "npm:dc@2.0.0-beta.32",
+      "react": "npm:react@15.3.2",
+      "react-dom": "npm:react-dom@15.3.2"
+    },
     "npm:dc@2.0.0-beta.32": {
       "crossfilter2": "npm:crossfilter2@1.3.14",
       "d3": "npm:d3@3.5.17",
@@ -340,15 +345,14 @@ System.config({
       "create-hash": "npm:create-hash@1.1.2",
       "crypto": "github:jspm/nodelibs-crypto@0.1.0"
     },
-    "npm:fbjs@0.8.5": {
+    "npm:fbjs@0.8.6": {
       "core-js": "npm:core-js@1.2.7",
-      "immutable": "npm:immutable@3.8.1",
       "isomorphic-fetch": "npm:isomorphic-fetch@2.2.1",
       "loose-envify": "npm:loose-envify@1.3.0",
       "object-assign": "npm:object-assign@4.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "promise": "npm:promise@7.1.1",
-      "ua-parser-js": "npm:ua-parser-js@0.7.10"
+      "ua-parser-js": "npm:ua-parser-js@0.7.11"
     },
     "npm:glob@5.0.15": {
       "assert": "github:jspm/nodelibs-assert@0.1.0",
@@ -524,7 +528,7 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:react@15.3.2": {
-      "fbjs": "npm:fbjs@0.8.5",
+      "fbjs": "npm:fbjs@0.8.6",
       "loose-envify": "npm:loose-envify@1.3.0",
       "object-assign": "npm:object-assign@4.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
@@ -539,7 +543,7 @@ System.config({
       "stream-browserify": "npm:stream-browserify@1.0.0",
       "string_decoder": "npm:string_decoder@0.10.31"
     },
-    "npm:readable-stream@2.1.5": {
+    "npm:readable-stream@2.2.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "buffer-shims": "npm:buffer-shims@1.0.0",
       "core-util-is": "npm:core-util-is@1.0.2",
@@ -592,7 +596,7 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2",
       "stream": "github:jspm/nodelibs-stream@0.1.0"
     },
-    "npm:ua-parser-js@0.7.10": {
+    "npm:ua-parser-js@0.7.11": {
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
     "npm:upper-case-first@1.1.2": {

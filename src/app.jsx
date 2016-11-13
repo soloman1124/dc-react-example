@@ -3,9 +3,11 @@ import 'bootstrap/css/bootstrap.css!';
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { ChartContainer, PieChart, RowChart, BubbleChart, DataTable, DataCount } from 'dc-react';
+import { ChartContainer, PieChart, RowChart, BubbleChart,
+         DataTable, DataCount, BarChart, LineChart } from 'dc-react';
 import crossfilter from 'crossfilter';
 import d3 from 'd3';
+import dc from 'dc';
 
 const dateFormat = d3.time.format('%m/%d/%Y');
 const numberFormat = d3.format('.2f');
@@ -31,6 +33,38 @@ class CrossfilterContext {
       return `Q${quarter}`;
     });
     this.quarterGroup = this.quarterDimension.group().reduceSum(d => d.volume);
+
+    this.fluctuationDimension = this.crossfilter.dimension(d => Math.round((d.close - d.open) / d.open * 100));
+    this.fluctuationGroup = this.fluctuationDimension.group();
+
+    this.moveMonthsDimension = this.crossfilter.dimension(d => d.month);
+    this.moveMonthsGroup = this.moveMonthsDimension.group().reduceSum(d => Math.abs(d.close - d.open));
+  }
+
+  get indexAvgByMonthGroup() {
+    if (this._indexAvgByMonthGroup) {
+      return this._indexAvgByMonthGroup;
+    }
+
+    this._indexAvgByMonthGroup = this.moveMonthsDimension.group().reduce(
+      (p, v) => {
+        ++p.days;
+        p.total += (v.open + v.close) / 2;
+        p.avg = Math.round(p.total / p.days);
+        return p;
+      },
+      (p, v) => {
+          --p.days;
+          p.total -= (v.open + v.close) / 2;
+          p.avg = p.days ? Math.round(p.total / p.days) : 0;
+          return p;
+      },
+      () => {
+        return {days: 0, total: 0, avg: 0};
+      }
+    );
+
+    return this._indexAvgByMonthGroup;
   }
 
   get yearlyPerformanceGroup() {
@@ -101,6 +135,7 @@ class App extends Component {
   render() {
     return (
       <ChartContainer className="container" crossfilterContext={this.crossfilterContext}>
+        <h1>Nasdaq 100 Index 1985/11/01-2012/06/29</h1>
         <BubbleChart className="row"
           dimension={ctx => ctx.yearlyDimension}
           group={ctx => ctx.yearlyPerformanceGroup}
@@ -118,7 +153,7 @@ class App extends Component {
           <PieChart
             dimension={ctx => ctx.gainOrLossDimension}
             group={ctx => ctx.gainOrLossGroup}
-            width={280} height={180}
+            width={180} height={180}
             radius={80}
             label={(d) => {
               let percent = numberFormat(d.value / this.crossfilterContext().groupAll.value() * 100);
@@ -129,22 +164,65 @@ class App extends Component {
           <PieChart
             dimension={ctx => ctx.quarterDimension}
             group={ctx => ctx.quarterGroup}
-            width={280} height={180}
+            width={180} height={180}
             radius={80} innerRadius={30}
           />
           <RowChart
             dimension={ctx => ctx.dayOfWeekDimension}
             group={ctx => ctx.dayOfWeekGroup}
-            width={280} height={180}
+            width={180} height={180}
             elasticX={true}
+            margins={{top: 20, left: 10, right: 10, bottom: 20}}
             label={d => d.key.split('.')[1]}
+            title={d => d.value}
+            xAxis={axis => axis.ticks(4)}
+          />
+          <BarChart
+            dimension={ctx => ctx.fluctuationDimension}
+            group={ctx => ctx.fluctuationGroup}
+            width={420}
+            height={180}
+            elasticY={true}
+            centerBar={true}
+            gap={1}
+            round={dc.round.floor}
+            alwaysUseRounding={true}
+            x={d3.scale.linear().domain([-25, 25])}
+            renderHorizontalGridLines={true}
           />
         </div>
         <DataCount
           dimension={ctx => ctx.crossfilter}
           group={ctx => ctx.groupAll}
         />
+        <LineChart
+          dimension={ctx => ctx.moveMonthsDimension}
+          group={ctx => [ctx.indexAvgByMonthGroup, 'Monthly Index Average']}
+          renderArea={true}
+          width={990}
+          height={200}
+          transitionDuration={1000}
+          margins={{top: 30, right: 50, bottom: 25, left: 40}}
+          mouseZoomable={true}
+          x={d3.time.scale().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)])}
+          round={d3.time.month.round}
+          xUnits={d3.time.months}
+          elasticY={true}
+          renderHorizontalGridLines={true}
+          legend={dc.legend().x(800).y(10).itemHeight(13).gap(5)}
+          brushOn={false}
+          valueAccessor={d => d.value.avg}
+          title={(d) => {
+            let value = d.value.avg ? d.value.avg : d.value;
+            if (isNaN(value)) {
+              value = 0;
+            }
+            return `${dateFormat(d.key)}\n${numberFormat(value)}`;
+          }}
+          stack={ctx => [ctx.moveMonthsGroup, 'Monthly Index Move', (d) => { return d.value; }]}
+        />
         <DataTable
+          className="table table-hover"
           dimension={ctx => ctx.dateDimension}
           group={d => `${d.dd.getFullYear()}/${d.dd.getMonth()+1}`}
           columns={[
