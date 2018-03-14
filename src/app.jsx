@@ -1,15 +1,15 @@
-import 'dc/dc.css!';
-import 'bootstrap/css/bootstrap.css!';
+import './node_modules/dc/dc.css'
+import './node_modules/bootstrap/scss/bootstrap.scss';
 
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { ChartContainer, PieChart, RowChart, BubbleChart,
          DataTable, DataCount, BarChart, LineChart } from 'dc-react';
 import crossfilter from 'crossfilter';
-import d3 from 'd3';
+import * as d3 from "d3"
 import dc from 'dc';
 
-const dateFormat = d3.time.format('%m/%d/%Y');
+const dateFormat = d3.timeFormat('%m/%d/%Y');
 const numberFormat = d3.format('.2f');
 const weekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -19,7 +19,7 @@ class CrossfilterContext {
     this.crossfilter = crossfilter(data);
     this.groupAll = this.crossfilter.groupAll();
     this.dateDimension = this.crossfilter.dimension(d => d.dd);
-    this.yearlyDimension = this.crossfilter.dimension(d => d3.time.year(d.dd).getFullYear());
+    this.yearlyDimension = this.crossfilter.dimension(d => d3.timeYear(d.dd).getFullYear());
     this.dayOfWeekDimension = this.crossfilter.dimension((d) => {
       var day = d.dd.getDay();
       return `${day}.${weekdayLabels[day]}`;
@@ -117,22 +117,27 @@ class App extends Component {
   }
 
   crossfilterContext = (callback) => {
+
+    let parseDate = d3.timeParse('%m/%d/%Y');
+
     if (!callback) {
       return this._crossfilterContext;
     }
     d3.csv('../ndx.csv', (data) => {
       for (let d of data) {
-        d.dd = dateFormat.parse(d.date);
-        d.month = d3.time.month(d.dd);
+        d.dd = parseDate(d.date);
+        d.month = d3.timeMonth(d.dd);
         d.close = +d.close;
         d.open = +d.open;
       }
+
       this._crossfilterContext = new CrossfilterContext(data);
       callback(this._crossfilterContext);
     });
   };
 
   render() {
+
     return (
       <ChartContainer className="container" crossfilterContext={this.crossfilterContext}>
         <h1>Nasdaq 100 Index 1985/11/01-2012/06/29</h1>
@@ -144,9 +149,9 @@ class App extends Component {
           keyAccessor={p => p.value.absGain}
           valueAccessor={p => p.value.percentageGain}
           radiusValueAccessor={p => p.value.fluctuationPercentage}
-          x={d3.scale.linear().domain([-2500, 2500])}
-          y={d3.scale.linear().domain([-100, 100])}
-          r={d3.scale.linear().domain([0, 4000])}
+          x={d3.scaleLinear().domain([-2500, 2500])}
+          y={d3.scaleLinear().domain([-100, 100])}
+          r={d3.scaleLinear().domain([0, 4000])}
           colorDomain={[-500, 500]}
         />
         <div className="row">
@@ -157,7 +162,6 @@ class App extends Component {
             radius={80}
             label={(d) => {
               let percent = numberFormat(d.value / this.crossfilterContext().groupAll.value() * 100);
-
               return `${d.key} (${percent}%)`;
             }}
           />
@@ -187,7 +191,7 @@ class App extends Component {
             gap={1}
             round={dc.round.floor}
             alwaysUseRounding={true}
-            x={d3.scale.linear().domain([-25, 25])}
+            x={d3.scaleLinear().domain([-25, 25])}
             renderHorizontalGridLines={true}
           />
         </div>
@@ -204,9 +208,9 @@ class App extends Component {
           transitionDuration={1000}
           margins={{top: 30, right: 50, bottom: 25, left: 40}}
           mouseZoomable={true}
-          x={d3.time.scale().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)])}
-          round={d3.time.month.round}
-          xUnits={d3.time.months}
+          x={d3.scaleTime().domain([new Date(1985, 0, 1), new Date(2012, 11, 31)])}
+          round={d3.timeMonth.round}
+          xUnits={d3.timeMonths}
           elasticY={true}
           renderHorizontalGridLines={true}
           legend={dc.legend().x(800).y(10).itemHeight(13).gap(5)}
